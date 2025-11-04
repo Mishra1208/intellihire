@@ -1,0 +1,8 @@
+.git
+.gitignore
+.gradle
+build
+out
+**/node_modules
+intellihire-web
+.DS_Store
