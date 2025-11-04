@@ -22,8 +22,9 @@ app:
 
 spring:
   datasource:
-    # Override these in prod with your managed Postgres values
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:intellihire}
+    # Render/Prod reads these from env. Local dev falls back to the defaults below.
+    # IMPORTANT: JDBC_PARAMS lets us append things like sslmode=require in prod.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:intellihire}?${JDBC_PARAMS:sslmode=disable}
     username: ${DB_USER:intelli}
     password: ${DB_PASS:secret}
 
