@@ -1,4 +1,7 @@
 server:
+  tomcat:
+    threads:
+      max: 50
   # Render/Railway set PORT automatically; default to 8080 for local dev
   port: ${PORT:8080}
 
@@ -27,6 +30,11 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:intellihire}?${JDBC_PARAMS:sslmode=disable}
     username: ${DB_USER:intelli}
     password: ${DB_PASS:secret}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      # optional: fail fast on slow DB to avoid piling memory during boot
+      initialization-fail-timeout: 60000
 
   jpa:
     hibernate:
@@ -45,8 +53,8 @@ spring:
       client:
         registration:
           linkedin:
-            client-id: ${LINKEDIN_CLIENT_ID}
-            client-secret: ${LINKEDIN_CLIENT_SECRET}
+            client-id: ${LINKEDIN_CLIENT_ID:}
+            client-secret: ${LINKEDIN_CLIENT_SECRET:}
             client-name: LinkedIn
             provider: linkedin
             authorization-grant-type: authorization_code
