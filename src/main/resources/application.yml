@@ -1,0 +1,68 @@
+server:
+  # Render/Railway set PORT automatically; default to 8080 for local dev
+  port: ${PORT:8080}
+
+app:
+  rapidapi:
+    baseUrl: https://jsearch.p.rapidapi.com
+    host: jsearch.p.rapidapi.com
+    jsearchHost: ${app.rapidapi.host}
+    key: ${RAPIDAPI_KEY:}
+    connectTimeoutMs: 5000
+    readTimeoutMs: 10000
+
+  oauth:
+    # Where the backend redirects the browser AFTER successful login
+    # prod example: https://your-frontend.vercel.app/
+    frontendSuccess: ${FRONTEND_SUCCESS:http://localhost:5173/}
+
+  cors:
+    # Comma-separated list. Prod example: https://your-frontend.vercel.app
+    allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+spring:
+  datasource:
+    # Override these in prod with your managed Postgres values
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:intellihire}
+    username: ${DB_USER:intelli}
+    password: ${DB_PASS:secret}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  # ── OAuth2 Client: LinkedIn (OIDC) ─────────────────────────────────────────
+  security:
+    oauth2:
+      client:
+        registration:
+          linkedin:
+            client-id: ${LINKEDIN_CLIENT_ID}
+            client-secret: ${LINKEDIN_CLIENT_SECRET}
+            client-name: LinkedIn
+            provider: linkedin
+            authorization-grant-type: authorization_code
+            # Must EXACTLY match the value registered in LinkedIn portal
+            redirect-uri: ${OIDC_REDIRECT_URI:http://127.0.0.1:8080/login/oauth2/code/linkedin}
+            scope: openid,profile,email
+        provider:
+          linkedin:
+            authorization-uri: https://www.linkedin.com/oauth/v2/authorization
+            token-uri: https://www.linkedin.com/oauth/v2/accessToken
+            user-info-uri: https://api.linkedin.com/v2/userinfo
+            user-name-attribute: sub
+
+# Boot 3+ global CORS from properties (delete WebConfig.java)
+spring.web:
+  cors:
+    allowed-origins: ${app.cors.allowedOrigins}
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
